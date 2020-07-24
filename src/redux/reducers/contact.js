@@ -9,6 +9,11 @@ export default (state = initialState, action) => {
         ...state,
         contacts: action.payload,
       };
+    case "ADD_CONTACTS":
+      return {
+        ...state,
+        contacts: [action.payload, ...state.contacts],
+      };
     default:
       return state;
   }

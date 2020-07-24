@@ -1,43 +1,16 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { setContacts } from "./redux/action/contact";
-import { sortBy, map } from "lodash";
-import { Table } from "semantic-ui-react";
+import { useDispatch } from "react-redux";
+import { setContacts, addContacts } from "./redux/action/contact";
+import { Grid } from "semantic-ui-react";
 
-import db from "./db.json";
+import Table from "./components/Table";
+import AddRecord from "./components/AddRecord";
+import InfoCard from "./components/InfoCard"
 
 function App() {
   const dispatch = useDispatch();
-  const { contacts } = useSelector(({ contacts }) => {
-    return {
-      contacts: contacts.contacts,
-    };
-  });
 
-  const [state, setState] = React.useState({
-    column: null,
-    data: contacts,
-    direction: null,
-  });
-
-  const handleSort = (clickedColumn) => {
-    const { column, data, direction } = state;
-
-    if (column !== clickedColumn) {
-      setState({
-        column: clickedColumn,
-        data: sortBy(data, [clickedColumn]),
-        direction: "ascending",
-      });
-      return;
-    }
-
-    setState({
-      ...state,
-      data: data.reverse(),
-      direction: direction === "ascending" ? "descending" : "ascending",
-    });
-  };
+  const [ selectContact , setSelectContact ] = React.useState(null)
 
   React.useEffect(() => {
     fetch(
@@ -47,57 +20,25 @@ function App() {
       .then((json) => dispatch(setContacts(json)));
   }, []);
 
-  const { column, data, direction } = state;
+  function onAddRecord(value){
+    dispatch(addContacts(value))
+  }
+
+  function onSelectedContact(user){
+    setSelectContact(user)
+  }
 
   return (
     <div className="App">
-      <Table sortable celled fixed color="black" inverted>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell
-              sorted={column === "id" ? direction : null}
-              onClick={handleSort.bind(null, "id")}
-            >
-              id
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === "firstName" ? direction : null}
-              onClick={handleSort.bind(null, "firstName")}
-            >
-              firstName
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === "lastName" ? direction : null}
-              onClick={handleSort.bind(null, "lastName")}
-            >
-              lastName
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === "email" ? direction : null}
-              onClick={handleSort.bind(null, "email")}
-            >
-              email
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === "phone" ? direction : null}
-              onClick={handleSort.bind(null, "phone")}
-            >
-              phone
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {map(data, ({ id, firstName, lastName, email, phone }) => (
-            <Table.Row key={id}>
-              <Table.Cell>{id}</Table.Cell>
-              <Table.Cell>{firstName}</Table.Cell>
-              <Table.Cell>{lastName}</Table.Cell>
-              <Table.Cell>{email}</Table.Cell>
-              <Table.Cell>{phone}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+      <Grid columns={3}>
+        <Grid.Column width="3">
+          <AddRecord onAddRecord={onAddRecord}/>
+          {selectContact && <InfoCard {...selectContact[0]}/>}
+        </Grid.Column>
+        <Grid.Column width="10">
+          <Table onSelected={onSelectedContact}/>
+        </Grid.Column>
+      </Grid>
     </div>
   );
 }

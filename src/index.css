@@ -11,3 +11,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.App{
+  background: #2185d0bf;
+  padding: 10px;
+}
+
+.ui.form {
+  margin: 10px;
+}
+.wrap, .info-card{
+  background-color: #333333;
+  margin-left:5px;
+  padding: 5px;
+  border-radius: .28571429rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.info-card > *{
+  margin: 7px;
+}
+.info-card .discription textarea{
+  resize: none;
+}
